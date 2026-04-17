@@ -1,0 +1,401 @@
+{
+  "name": "Workflow Sistem Monitoring & Pencatatan Transaksi Otomatis",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2.1,
+      "position": [
+        -624,
+        176
+      ],
+      "id": "63577249-1356-440a-bcd7-6ec88f97be53",
+      "name": "Menunggu dan mengambil email baru",
+      "credentials": {
+        "imap": {
+          "id": "vCu1hdJviU7RuSax",
+          "name": "IMAP account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.subject }}",
+                    "rightValue": "Spotify",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "21e52371-551f-46e3-9b91-9e661fff43c9"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Spotify"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.subject }}",
+                    "rightValue": "Gojek",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "6167a413-f781-4126-8bca-3f2c73626330"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Gojek"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.subject }}",
+                    "rightValue": "Shopee",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "f96afd3f-fecb-4343-b784-a6f568b9367d"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Shopee"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.1,
+      "position": [
+        -400,
+        160
+      ],
+      "id": "22022527-226b-42b3-be5d-f8ff08c1c3a0",
+      "name": "Memeriksa Email"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3e94c48b-35f7-4cb7-8d59-a79f00881f43",
+              "name": "Tanggal",
+              "value": "={{ $json.date }}",
+              "type": "string"
+            },
+            {
+              "id": "811d7fac-d596-4596-94d1-8f8b1a91d96e",
+              "name": "Jumlah",
+              "value": "=={{ $json.textPlain.match(/Jumlah:\\s*Rp\\s*([\\d.]+)/i)?.[1]?.replace(/\\./g,'') || \"0\" }}",
+              "type": "string"
+            },
+            {
+              "id": "ebeebd7b-b649-4ccc-bc6f-3e7227e56b20",
+              "name": "Produk",
+              "value": "Shopee",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        384
+      ],
+      "id": "efeab2e2-aac1-43de-81b5-8e7ee34f1b47",
+      "name": "Shopee"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        352,
+        160
+      ],
+      "id": "dbad0f34-60f4-457c-b77e-8bfd91418517",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1PBc8vDHUBhED7Xp95XL1ILJ8yFgFMBWFBjZr3E1vIbI",
+          "mode": "list",
+          "cachedResultName": "Pencatat Keuangan dari Email",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PBc8vDHUBhED7Xp95XL1ILJ8yFgFMBWFBjZr3E1vIbI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PBc8vDHUBhED7Xp95XL1ILJ8yFgFMBWFBjZr3E1vIbI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Produk": "={{ $json.Produk }}",
+            "Tanggal ": "={{ $json.Tanggal }}",
+            "Jumlah ": "={{ $json.Jumlah }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Tanggal ",
+              "displayName": "Tanggal ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Jumlah ",
+              "displayName": "Jumlah ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Produk",
+              "displayName": "Produk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        624,
+        176
+      ],
+      "id": "9f3461d2-a9a5-45c0-911e-31feec2df5f0",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oV0ZPaGsfxLjCL1t",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fdd3a036-8427-483f-ae73-789c29ebc7f4",
+              "name": "Tanggal",
+              "value": "={{ $json.date }}",
+              "type": "string"
+            },
+            {
+              "id": "1bc7cb9d-5eb9-4325-b307-17be16485594",
+              "name": "Jumlah",
+              "value": "={{ $json.textPlain.match(/Rp\\s*([\\d.]+)/)?.[1]?.replace(/\\./g,'') || \"0\" }}",
+              "type": "string"
+            },
+            {
+              "id": "75dc7020-ebaf-4824-94ba-f993e8dbcf6f",
+              "name": "Produk",
+              "value": "Spotify",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        -16
+      ],
+      "id": "228af870-9e33-44de-b7cc-e63af3dffe7d",
+      "name": "Spotify"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0a98fd9e-cdb0-4111-bdae-613b0aa692d6",
+              "name": "Tanggal",
+              "value": "={{ $json.date }}",
+              "type": "string"
+            },
+            {
+              "id": "08208bc7-a674-4326-b398-ba2777ac2fe0",
+              "name": "Jumlah",
+              "value": "={{ $json.textPlain.match(/Total Pembayaran\\s*Rp\\s*([\\d.]+)/i)?.[1]?.replace(/\\./g,'') || \"0\" }}",
+              "type": "string"
+            },
+            {
+              "id": "ed6bbb7a-5bbe-4b19-9379-023eb1c364d0",
+              "name": "Produk",
+              "value": "Gojek",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        176
+      ],
+      "id": "f33a4626-7cae-4519-934d-7c492fdbbabf",
+      "name": "Gojek"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Menunggu dan mengambil email baru": {
+      "main": [
+        [
+          {
+            "node": "Memeriksa Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memeriksa Email": {
+      "main": [
+        [
+          {
+            "node": "Spotify",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gojek",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Shopee",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shopee": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Spotify": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gojek": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "228f71d0-7b5d-4134-b728-4b5005e005a2",
+  "meta": {
+    "instanceId": "a82a83e928bd86ebee645190c3e8e8e720bb96438d836d91e81f6558b87cee59"
+  },
+  "id": "68OX2mLD2SHu3ehW",
+  "tags": []
+}
